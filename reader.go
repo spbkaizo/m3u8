@@ -241,14 +241,15 @@ func decode(buf *bytes.Buffer, strict bool, customDecoders []CustomDecoder) (Pla
 	switch state.listType {
 	case MASTER:
 		return master, MASTER, nil
-	case MEDIA:
-		if media.Closed || media.MediaType == EVENT {
-			// VoD and Event's should show the entire playlist
-			media.SetWinSize(0)
-		}
-		return media, MEDIA, nil
 	}
-	return nil, state.listType, errors.New("Can't detect playlist type")
+	// take a guess, probably dangerous but a quick hack to fix 6MusicProxy
+	//case MEDIA:
+	if media.Closed || media.MediaType == EVENT {
+		// VoD and Event's should show the entire playlist
+		media.SetWinSize(0)
+	}
+	return media, MEDIA, nil
+	//return nil, state.listType, errors.New("Can't detect playlist type")
 }
 
 // DecodeAttributeList turns an attribute list into a key, value map. You should trim
